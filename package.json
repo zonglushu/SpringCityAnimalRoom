@@ -1,0 +1,22 @@
+{
+  "name": "minicode-26",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/intl": "^1.2.2",
+    "@types/vec2": "^1.6.5",
+    "@vant/weapp": "^1.11.7",
+    "core-js": "^3.40.0",
+    "intl": "^1.2.5",
+    "pixi-dashed-line": "^1.4.2",
+    "uuid": "^11.1.0",
+    "uuidjs": "^5.1.0",
+    "vec2": "^1.6.1"
+  }
+}

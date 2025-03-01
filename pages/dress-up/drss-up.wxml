@@ -1,0 +1,32 @@
+<!--pages/drss-up.wxml-->
+
+<view class='container'>
+  <image src="./img/bg.jpg" mode="aspectFill" class="bg"></image>
+  <!-- <canvas type="webgl" id="myCanvas" bindtouchstart="touchEvent" bindtouchmove="touchEvent" bindtouchend="touchEvent" bindtouchcancel="touchEvent"></canvas> -->
+  <canvas id="pixiCanvas" type="webgl" style="width: 100%;height: 70%;"     bindtouchstart="handleTouch" 
+    bindtouchmove="handleTouch" 
+    bindtouchend="handleTouch">
+
+  </canvas>
+
+
+  <view class="tabs-container">
+    <van-tabs active="{{activeTab}}" sticky color="white" title-active-color="blue" custom-class="custom-tabs" bind:change='onTabChange'>
+      <van-tab wx:for="{{ tabs }}" wx:key="id" title="{{ item.title }}" name="{{ item.id }}">
+        <van-grid column-num="4" border="{{ false }}" gutter="10">
+          <van-grid-item wx:for="{{currentMaterialsList}}" wx:key="id" data-item="{{ item }}" bind:tap="onImageTap" use-slot bindtap="onImageTap">
+            <image src="{{ item.thumbnail }}" mode="aspectFit" style="width: 100%; height: 200rpx;"  />
+            <view style="text-align: center; font-size: 24rpx; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              {{ item.name }}
+            </view>
+          </van-grid-item>
+        </van-grid>
+      </van-tab>
+    </van-tabs>
+    <view class="button-container">
+      <van-button type="info" round='{{true}}'>保存到本地</van-button>
+    </view>
+  </view>
+
+
+</view>

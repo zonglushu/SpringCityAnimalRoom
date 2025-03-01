@@ -1,0 +1,49 @@
+/* pages/drss-up.wxss */
+
+/* 背景样式 */
+.bg {
+  position: fixed; /* 固定定位 */
+  top: 0;
+  left: 0;
+  width: 100%; /* 宽度撑满 */
+  height: 100vh; /* 高度撑满 */
+  z-index: 0; /* 置于底层 */
+}
+
+/* 标签页的样式 */
+.custom-tabs {
+ 
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  background-color: white;
+  overflow: hidden; /* 确保内容也遵循圆角 */
+  flex: 1;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* 占据整个页面高度 */
+  justify-content: space-between; /* 将内容分布在顶部和底部 */
+}
+/* 单独调整 tabs 的父容器 */
+.tabs-container {
+  background-color: white;
+  z-index: 999;
+  margin-top: 0;
+  padding-top: 0;
+  padding-bottom: 120rpx; 
+}
+/* 按钮容器样式 */
+.button-container {
+  display: flex;
+  justify-content: center;
+  position: fixed; /* 新增定位 */
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 21rpx;
+  background: white; /* 防止内容穿透 */
+}

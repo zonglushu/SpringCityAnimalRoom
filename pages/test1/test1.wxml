@@ -1,0 +1,14 @@
+<!--pages/test.wxml-->
+<!-- 页面结构 -->
+<!-- 绑定 Canvas 并设置触摸事件 -->
+<view class="container">
+  <canvas 
+    type="webgl" 
+    id="pixiCanvas" 
+    style="width: 750rpx; height: 1334rpx;" 
+    bindtouchstart="handleTouch" 
+    bindtouchmove="handleTouch" 
+    bindtouchend="handleTouch"
+  ></canvas>
+</view>
+
