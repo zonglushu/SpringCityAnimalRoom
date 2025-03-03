@@ -1,4 +1,5 @@
 import EventEmitter from "./eventemitter3";
+import { Person } from "./person";
 import { Prop } from "./prop";
 export  class DressEntrance extends EventEmitter {
   constructor(PIXI,stageWidth,stageHeight,app) {
@@ -16,24 +17,30 @@ export  class DressEntrance extends EventEmitter {
     // 存基于纹理创建的Person和Props对象，是业务逻辑层
     // 由于是js，我们需要额外明确类型，该对象的每一个属性就是person或prop对象的字符串key，其值就是对应的persion和prop对象
     this.MaterialPool={}; 
+    this.currentRole=null
   }
 
-    // // 创建精灵
-    // createSprite(name, x = 0, y = 0) {
-    //   if (!this.textureCache.has(name)) {
-    //     throw new Error(`Texture for ${name} not found in cache!`);
-    //   }
-    //   const texture = this.textureCache.get(name);
-    //   const sprite = new PIXI.Sprite(texture);
-    //   sprite.x = x;
-    //   sprite.y = y;
-    //   this.app.stage.addChild(sprite);
-    //   return sprite;
-    // }
-    // 处理ItemSelect事件，当用户选择某个素材时，会触发ItemSelect事件，并更新素材为可编辑状态
+
+    addPerson(personInfo){
+      const person=new Person(this.app,this.PIXI,personInfo)
+      this.MaterialPool[person.key]=person;
+      person.on("Selected",this.onSelect);
+      person.on("Delete",this.onDelete);
+      return person
+    }
+    addProp(propsInfo){
+      const prop=new Prop(this.app,this.PIXI,propsInfo)
+      this.MaterialPool[prop.key]=prop;
+      prop.on("Selected",this.onSelect);
+      prop.on("Delete",this.onDelete);
+      return prop
+    }
+    changeRoleDress(dressInfo){
+      const currentEditableRole=this.MaterialPool[this.currentRole]
+      currentEditableRole.changeDress(dressInfo)
+    }
     onSelect = (selectItem) => {
       this.emit('ItemSelect', selectItem); // 触发 ItemSelect 事件
-      console.log("选择事件")
       if (!selectItem) {
         return;
       }
@@ -42,6 +49,10 @@ export  class DressEntrance extends EventEmitter {
         if (material.key !== selectItem.key) {
           material.makeObjectUnEditable(); // 其他素材不可编辑
         } else {
+          if(material instanceof Person){
+            this.currentRole=selectItem.key
+          } 
+          console.log("被选择的item",material)
           material.recoverEditable(); // 当前素材可编辑
         }
       }
@@ -58,15 +69,4 @@ export  class DressEntrance extends EventEmitter {
         this.app.stage.removeChild(item.editorContainer); // 从场景中移除对象
       }
     };
-
-    addPerson(){
-
-    }
-    addProp(propsInfo){
-      const prop=new Prop(this.app,this.PIXI,propsInfo)
-      this.MaterialPool[prop.key]=prop;
-      prop.on("Selected",this.onSelect);
-      prop.on("Delete",this.onDelete);
-      return prop
-    }
 }

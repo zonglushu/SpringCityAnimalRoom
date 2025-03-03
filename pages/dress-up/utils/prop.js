@@ -19,18 +19,12 @@ export class Prop extends EditableObject {
     this.key=getRandomId();
     this.props=null;
     // 虚线对象，是自定义的虚线对象
-    this.dashLine = null;
-    // 删除按钮对象，也是自定义的，用于删除当前可编辑对象
-    this.delBtn = null;
-    // 控制按钮对象，允许用户对可编辑对象进行控制操作（如缩放、旋转等）
-    this.controlBtn = null;
-    this.editorContainer=null;
-    // 存储可编辑对象的原始数据，如（位置，大小、旋转角度等），以便用户操作后可以恢复到原始状态
-    this.originDataMap = {};
-    // 存储默认旋转角度
-    this.defaultAngle = 0;
-    // 默认距离值
-    this.defaultDistance = 0;
+    // this.dashLine = null;
+    // // 删除按钮对象，也是自定义的，用于删除当前可编辑对象
+    // this.delBtn = null;
+    // // 控制按钮对象，允许用户对可编辑对象进行控制操作（如缩放、旋转等）
+    // this.controlBtn = null;
+
 
     this.editableTarget=null;
     // 将props放到舞台中央
@@ -185,6 +179,7 @@ export class Prop extends EditableObject {
       sprite.width,
       sprite.height
     );
+    
 
     sprite.addChild(childDebug);
 

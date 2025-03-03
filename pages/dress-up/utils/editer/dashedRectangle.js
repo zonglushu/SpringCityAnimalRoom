@@ -9,10 +9,14 @@ export class DashedRectangle {
     // 获取可编辑目标的边界矩形
     // const rect = this.editableTarget.getBounds();
     const rect = this.editableTarget.getGlobalPosition()
-    const { x, y } = rect;
+    let { x, y } = rect;
     const width= this.editableTarget.width
     const height=this.editableTarget.height
     console.log("是中心还是什么",x,y)
+
+    // 计算左上角的坐标
+     x = x - width / 2;
+     y = y - height / 2;
 
     // const { x, y, width, height } = rect;
     const line = new this.PIXI.Graphics();

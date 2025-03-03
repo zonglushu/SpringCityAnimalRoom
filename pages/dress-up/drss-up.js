@@ -83,14 +83,30 @@ Page({
     onImageTap(event) {
       const item = event.currentTarget.dataset.item; // 获取传递的 item
 
-      const {name,width,height}=item
+      const {name,width,height,dataType,textureUrl}=item
       if(item.dataType===Datatype.PROP.id)
       {
         const propInfo={name,width,height}
         console.log(propInfo)
         this.dressEntrance.addProp(propInfo)
         // const prop=new Prop(this.pixiApp,this.miniPIXI,propInfo)
+      }else if(item.dataType===Datatype.ROLE.id)
+      {
+        console.log("人物信息",item)
+        const defaultMaterialName = ["精神小伙", "呵呵", "基础上衣", "基础裤子"];
+        const defaultMaterial=this.materialsList.filter((material)=>{
+          return defaultMaterialName.includes(material.name)})
+        console.log("基础素材",defaultMaterial)
+        const personSize={width:400,height:800}
+        //查询人物的基础属性
+        const personInfo={name,width,height,defaultMaterial,personSize}
+        this.dressEntrance.addPerson(personInfo)
+      }else {
+        console.log("装饰信息",item)
+        const dressInfo={name,width,height,dataType,textureUrl}
+        this.dressEntrance.changeRoleDress(dressInfo)
       }
+
       // 在这里处理 item 的逻辑
       // 例如：跳转到详情页、显示弹窗等
     },
@@ -241,7 +257,7 @@ Page({
     this.pixiApp.stage.interactive = true;
     this.pixiApp.stage.interactiveChildren = true;
     this.dressEntrance= new DressEntrance(this.miniPIXI,stageWidth,stageHeight,this.pixiApp)
-
+    console.log(Object.entries(Datatype))
    // 将所有的图片资源加载到PIXI中成为纹理对象
     TextureResourceLoader.priorityLoadByDataType(this.materialsList,priorityTypes,
       (progress) => {

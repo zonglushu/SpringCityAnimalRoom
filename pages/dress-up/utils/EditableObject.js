@@ -98,15 +98,24 @@ export class EditableObject extends EventEmitter{
     // 将容器的位置设置为原来人物的位置
     // container.x = originX;
     // container.y = originY;
+
     this.editorContainer.position.set(
       this.app.screen.width / 2 +offsetList[addedNum++ % 3],
       this.app.screen.height / 2
     );
-    this.editorContainer.pivot.x = originPX;
-    this.editorContainer.pivot.y = originPY;
-    this.editableTarget.anchor.set(0.5); // 子元素锚点居中
-    this.editableTarget.position.set(0, 0); 
-    // this.editorContainer = container;
+    if(this.editableTarget instanceof this.PIXI.Sprite){
+      this.editableTarget.anchor.set(0.5); // 子元素锚点居中
+      this.editableTarget.position.set(0, 0); 
+    }else{
+
+      const x=(this.editorContainer.width-this.editableTarget.width)/2
+      const y=(this.editorContainer.height-this.editableTarget.height)/2
+      // 设置子容器的 pivot 为中心
+      this.editableTarget.pivot.set(this.editorContainer.width / 2, this.editorContainer.height / 2);
+// 设置子容器的位置为父容器的中心
+       this.editableTarget.position.set(x, y);
+    }
+
 
     console.log("可操作对象",this.editorContainer)
     // 现在没有风险，但是未来可能会有风险
