@@ -81,20 +81,17 @@ export class EditableObject extends EventEmitter{
     obj.pivot.x = 0;
     obj.pivot.y = 0;
     // 创建三个用来编辑的物品
-    this.dashLine =  new DashedRectangle(this.PIXI,this.editableTarget).create();
-    // 从缓存中异常加载纹理，所以要等，不能异步
-    this.delBtn = await new DeleteBtn(this.PIXI, this.editableTarget,this.app).create();
-    this.controlBtn = await new ControlBtn(this.PIXI, this.editableTarget).create();
-    this.editorContainer.addChild(this.controlBtn,this.delBtn)
+
     setTimeout(() => {
       this.emit("Selected", this);
     }, 100);
     this.saveObjectOriginData()
 
-    initControlEvent(this)
-    initDeleteEvent(this)
 
     this.editorContainer.addChild( this.editableTarget);
+    this.editorContainer.getBounds(true)
+
+    // console.log("添加人物容器的外容器",this.editorContainer.getBounds())
     // 将容器的位置设置为原来人物的位置
     // container.x = originX;
     // container.y = originY;
@@ -103,23 +100,40 @@ export class EditableObject extends EventEmitter{
       this.app.screen.width / 2 +offsetList[addedNum++ % 3],
       this.app.screen.height / 2
     );
+  // 强制计算边界（必须在所有子元素添加后）
+  const containerBounds = this.editorContainer.getBounds(true);
+  
+  // // 设置父容器锚点为内容中心
+  // this.editorContainer.pivot.set(
+  //   containerBounds.width / 2,
+  //   containerBounds.height / 2
+  // );    
     if(this.editableTarget instanceof this.PIXI.Sprite){
       this.editableTarget.anchor.set(0.5); // 子元素锚点居中
       this.editableTarget.position.set(0, 0); 
     }else{
-
-      const x=(this.editorContainer.width-this.editableTarget.width)/2
-      const y=(this.editorContainer.height-this.editableTarget.height)/2
+      const x=(this.editorContainer.width-this.editableTarget.width)
+      const y=(this.editorContainer.height-this.editableTarget.height)
       // 设置子容器的 pivot 为中心
-      this.editableTarget.pivot.set(this.editorContainer.width / 2, this.editorContainer.height / 2);
+      this.editableTarget.pivot.set(x, y);
 // 设置子容器的位置为父容器的中心
-       this.editableTarget.position.set(x, y);
+       this.editableTarget.position.set(x,y);
     }
-
-
-    console.log("可操作对象",this.editorContainer)
+    this.dashLine =  new DashedRectangle(this.PIXI,this.editableTarget).create();
+    // 从缓存中异常加载纹理，所以要等，不能异步
+    this.delBtn = await new DeleteBtn(this.PIXI, this.editableTarget,this.app).create();
+    this.controlBtn = await new ControlBtn(this.PIXI, this.editableTarget).create();
+    this.editorContainer.addChild(this.controlBtn,this.delBtn)
+    this.delBtn.x=-this.editableTarget.width/2
+    this.delBtn.y=-this.editableTarget.height/2
+    this.controlBtn.x=this.editableTarget.width/2
+    this.controlBtn.y=-this.editableTarget.height/2
+    initControlEvent(this)
+    initDeleteEvent(this)
     // 现在没有风险，但是未来可能会有风险
     this.app.stage.addChild(this.editorContainer);
+    console.log("人物容器设置位置后，外容器",this.editorContainer.getBounds())
+
     // 保存对象原始位置关系？？？？？
     this.saveObjectOriginData();
   }

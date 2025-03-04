@@ -18,31 +18,31 @@ export class ControlBtn{
     sprite.height = 31;
     // 将锚点设置为精灵的中心点
     sprite.anchor.set(0.5,0.5);
-    sprite.position.set(0, 0); // 向左上偏移
+    sprite.position.set(0,0); 
 
     // 获取可编辑目标的边界矩形
     // const globalPos = this.editableTarget.getGlobalPosition();
     // const parentPos = this.editableTarget.parent.getGlobalPosition();
-    const rect = this.editableTarget.getLocalBounds();
-    const { x, y, width,height } = rect;
-    sprite.x = rect.x+width/2;
-    sprite.y = rect.y-height/2;
-    sprite.interactive=true
-    console.log("控制按钮的坐标",x,y)
-    sprite.hitArea = new this.PIXI.Circle(
-      x,
-      -2*height,
-      100
-  );
+  //   const rect = this.editableTarget.getLocalBounds();
+  //   const { x, y, width,height } = rect;
+  //   sprite.x = rect.x+width/2;
+  //   sprite.y = rect.y-height/2;
+  //   sprite.interactive=true
+  //   console.log("控制按钮的坐标",x,y)
+  //   sprite.hitArea = new this.PIXI.Circle(
+  //     x,
+  //     -2*height,
+  //     100
+  // );
   
  
-    const debugGraphics = new this.PIXI.Graphics()
-    .lineStyle(1, 0xff0000) // 红色边框
-    .drawCircle(
-      0, // 圆心的 x 坐标（相对于精灵的局部坐标系）
-      0, // 圆心的 y 坐标（相对于精灵的局部坐标系）
-      100  // 半径
-    );
+    // const debugGraphics = new this.PIXI.Graphics()
+    // .lineStyle(1, 0xff0000) // 红色边框
+    // .drawCircle(
+    //   0, // 圆心的 x 坐标（相对于精灵的局部坐标系）
+    //   0, // 圆心的 y 坐标（相对于精灵的局部坐标系）
+    //   100  // 半径
+    // );
   
   // 将调试图形添加到精灵的容器中
   // sprite.addChild(debugGraphics);
@@ -55,15 +55,6 @@ export class ControlBtn{
 
 
 
-    sprite.on("touchstart",(event)=>{
-      // 防止contanier拖动
-      event.stopPropagation(); // 阻止冒泡到父容器
-      console.log("asdsada")})
-
-      sprite.on("touchmove",(event)=>{
-        // 防止contanier拖动
-        event.stopPropagation(); // 阻止冒泡到父容器
-        console.log("移动")})
 
     this.icon = sprite;
     sprite.name = 'ctrlBtn';

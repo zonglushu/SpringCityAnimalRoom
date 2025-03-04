@@ -12,9 +12,9 @@ export const Datatype = Object.freeze({
 //
 export const dressSpriteStyles = {
   HAIR: (params) => {
-    const { sprite, person,personContanierHeight } = params;
+    const { sprite, personContanier,personContanierHeight } = params;
     sprite.x = 0;
-    sprite.y = -personContanierHeight / 2;
+    sprite.y = -personContanier.height/2-sprite.height/2;
     sprite.zIndex = 1;
   },
   FACE: (params) => {

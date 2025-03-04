@@ -19,19 +19,25 @@ export class Person extends EditableObject{
     this.createPerson()
   }
 
-  createPerson(){
+  async createPerson(){
     // 构建人物容器，所以还不能直接加载人物的图片，因为加载后，如果要换东西的话，就不好换了
     // 比如发型，你就踢不掉
     this.personContainer = new this.PIXI.Container();
-    this.personContainer.width=this.personInfo.personSize.width
-    this.personContainer.height=this.personInfo.personSize.height
+    // this.personContainer.width=this.personInfo.personSize.width
+    // this.personContainer.height=this.personInfo.personSize.height
     this.personContainer.sortableChildren=true;
       
     this.editableTarget=this.personContainer
     this.createDress();
-    this.editableTarget.getBounds()
-    this.makeSpriteEditable()
-    console.log("最外层容器",this.editorContainer.getBounds())
+    // 因为创建contanier，往contanier里面放东西都是异步操作，所以需要
+    // 等待，不能让其异步执行 
+    await this.makeSpriteEditable()
+    this.editorContainer.width=600
+    this.editorContainer.height=1000
+    console.log("可编辑后的外容器",this.editorContainer.getBounds())
+
+    // console.log("最外层容器",this.editorContainer.getBounds())
+    
     const debug = new this.PIXI.Graphics()
     .lineStyle(1, 0x000000)
     .drawRect( -this.editorContainer.width / 2, // 锚点为中心时的边界
@@ -40,11 +46,12 @@ export class Person extends EditableObject{
       this.editorContainer.height);
     this.editorContainer.addChild(debug);
       //绘制子元素边界框（绿色）
+      // const childBound=this.editableTarget.getBounds(true)
       const childDebug = new this.PIXI.Graphics()
       .lineStyle(1, 0x00ff00)
       .drawRect(
-        - this.editableTarget.width / 2, // 锚点为中心时的边界
-        - this.editableTarget.height / 2,
+        -this.editableTarget.width/2,
+        -this.editableTarget.height/2,
         this.editableTarget.width,
         this.editableTarget.height
       );
@@ -60,7 +67,9 @@ export class Person extends EditableObject{
         sprite.name=key
         this.personContainer.addChild(sprite)
         this.person[key]=sprite
-        dressSpriteStyles[key]({sprite:sprite,contanier:this.personContainer,person:this.person,personContanierHeight:this.personInfo.personSize.height})}
+        const childBound=this.editableTarget.getBounds(true)
+
+        dressSpriteStyles[key]({sprite:sprite,personContanier:this.personContainer,person:this.person,personContanierHeight:this.personInfo.personSize.height})}
       )
       console.log("人物",this.personContainer)
 
@@ -101,7 +110,10 @@ export class Person extends EditableObject{
     sprite.anchor.set(0.5,0.5);
     sprite.position.set(0, 0); // 向左上偏移
     sprite.name=dressType
-    dressSpriteStyles[dressType]({sprite,contanier:this.personContainer,person:this.person,personContanierHeight:this.personInfo.personSize.height})
+    const childBound=this.personContainer.getBounds(true)
+    dressSpriteStyles[dressType]({sprite,personContanier:this.personContainer,person:this.person,personContanierHeight:this.personInfo.personSize.height})
+    sprite.y=y;
+
 
 
   }
