@@ -44,7 +44,7 @@ export class Person extends EditableObject{
       -this.editorContainer.height / 2,
       this.editorContainer.width,
       this.editorContainer.height);
-    this.editorContainer.addChild(debug);
+    // this.editorContainer.addChild(debug);
       //绘制子元素边界框（绿色）
       // const childBound=this.editableTarget.getBounds(true)
       const childDebug = new this.PIXI.Graphics()
@@ -55,11 +55,11 @@ export class Person extends EditableObject{
         this.editableTarget.width,
         this.editableTarget.height
       );
-      this.editableTarget.addChild(childDebug);
+      // this.editableTarget.addChild(childDebug);
   }
   createDress(){
-    const { FACE, HAIR, JACKET, TROUSERS } = Datatype;
-    const DefaultPersonElement = {HAIR, FACE,JACKET, TROUSERS };
+    const { FACE, HAIR, JACKET, TROUSERS,ACCESSORIES} = Datatype;
+    const DefaultPersonElement = {HAIR, FACE,JACKET, TROUSERS,ACCESSORIES };
 
     Object.entries(DefaultPersonElement).forEach(
       ([key,value])=>{
@@ -101,7 +101,6 @@ export class Person extends EditableObject{
     const y=changedDress.y
     // 从缓存中找到新的纹理资源
     const texure= TextureResourceLoader.getTextureFromCache(dressInfo.name)
-    console.log("新加载的纹理",texure)
     const index = this.personContainer.getChildIndex(changedDress); // 获取旧精灵的层级位置
     this.personContainer.removeChild(changedDress); // 从容器移除旧精灵
     // 通过新的纹理创建新的sprite
@@ -110,7 +109,6 @@ export class Person extends EditableObject{
     sprite.anchor.set(0.5,0.5);
     sprite.position.set(0, 0); // 向左上偏移
     sprite.name=dressType
-    const childBound=this.personContainer.getBounds(true)
     dressSpriteStyles[dressType]({sprite,personContanier:this.personContainer,person:this.person,personContanierHeight:this.personInfo.personSize.height})
     sprite.y=y;
 

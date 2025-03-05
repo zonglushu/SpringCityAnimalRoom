@@ -1,8 +1,9 @@
 import EventEmitter from "./eventemitter3";
 import { Person } from "./person";
 import { Prop } from "./prop";
+import { TextureResourceLoader } from "./textureResourceLoader";
 export  class DressEntrance extends EventEmitter {
-  constructor(PIXI,stageWidth,stageHeight,app) {
+  constructor(PIXI,stageWidth,stageHeight,app,sceneInfo) {
     super()
     // const { sceneInfo } = defaultInfo;
     // 创建换装游戏全局的一个应用
@@ -18,6 +19,7 @@ export  class DressEntrance extends EventEmitter {
     // 由于是js，我们需要额外明确类型，该对象的每一个属性就是person或prop对象的字符串key，其值就是对应的persion和prop对象
     this.MaterialPool={}; 
     this.currentRole=null
+    this.addScene(sceneInfo)
   }
 
 
@@ -38,6 +40,16 @@ export  class DressEntrance extends EventEmitter {
     changeRoleDress(dressInfo){
       const currentEditableRole=this.MaterialPool[this.currentRole]
       currentEditableRole.changeDress(dressInfo)
+    }
+    addScene(sceneInfo){
+      const {name}=sceneInfo
+      const sceneTexture=TextureResourceLoader.getTextureFromCache(name)
+      // 加载背景图片
+      const background = new this.PIXI.Sprite(sceneTexture);
+      background.name='background'
+      background.width = this.app.screen.width; // 拉伸宽度
+      background.height = this.app.screen.height; // 拉伸高度
+      this.app.stage.addChild(background); // 将背景添加到舞台
     }
     onSelect = (selectItem) => {
       this.emit('ItemSelect', selectItem); // 触发 ItemSelect 事件

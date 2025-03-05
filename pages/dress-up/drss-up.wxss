@@ -12,9 +12,9 @@
 
 /* 标签页的样式 */
 .custom-tabs {
- 
+/*  
   border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
+  border-top-right-radius: 16px; */
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   background-color: white;
@@ -30,7 +30,7 @@
 }
 /* 单独调整 tabs 的父容器 */
 .tabs-container {
-  background-color: white;
+  /* background-color: white; */
   z-index: 999;
   margin-top: 0;
   padding-top: 0;

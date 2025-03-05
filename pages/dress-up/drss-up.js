@@ -5,7 +5,7 @@
 import { Prop } from "./utils/prop";
 
 import {createPIXI} from "../../libs/pixi.miniprogram"
-import  {Datatype} from "./utils/types"
+import  {Datatype,addMaterial} from "./utils/types"
 import {DressEntrance} from "./utils/dressEntrence"
 import {TextureResourceLoader} from './utils/textureResourceLoader'
 
@@ -49,6 +49,14 @@ Page({
     currentMaterialsList:[],
     // tab栏分类
     tabs:[],
+    show: false,
+  },
+  showPopup() {
+    this.setData({ show: true });
+  },
+
+  onClose() {
+    this.setData({ show: false });
   },
   // 处理素材列表的逻辑
     loadGridData(type){
@@ -84,139 +92,57 @@ Page({
       const item = event.currentTarget.dataset.item; // 获取传递的 item
 
       const {name,width,height,dataType,textureUrl}=item
-      if(item.dataType===Datatype.PROP.id)
-      {
-        const propInfo={name,width,height}
-        console.log(propInfo)
-        this.dressEntrance.addProp(propInfo)
-        // const prop=new Prop(this.pixiApp,this.miniPIXI,propInfo)
-      }else if(item.dataType===Datatype.ROLE.id)
-      {
-        console.log("人物信息",item)
-        const defaultMaterialName = ["精神小伙", "呵呵", "基础上衣", "基础裤子"];
-        const defaultMaterial=this.materialsList.filter((material)=>{
-          return defaultMaterialName.includes(material.name)})
-        console.log("基础素材",defaultMaterial)
-        const personSize={width:400,height:800}
-        //查询人物的基础属性
-        const personInfo={name,width,height,defaultMaterial,personSize}
-        this.dressEntrance.addPerson(personInfo)
-      }else {
-        console.log("装饰信息",item)
-        const dressInfo={name,width,height,dataType,textureUrl}
-        this.dressEntrance.changeRoleDress(dressInfo)
-      }
+      const addItem= addMaterial[item.dataType]
+      addItem({item:item,dressEntrance:this.dressEntrance,materialsList:this.materialsList})
+      
 
       // 在这里处理 item 的逻辑
       // 例如：跳转到详情页、显示弹窗等
     },
+      // 工具函数：查询 Canvas 节点
+    queryCanvas(selector = '#pixiCanvas') {
+      return new Promise((resolve) => {
+        wx.createSelectorQuery()
+          .select(selector)
+          .node()
+          .exec(resolve);
+      });
+    },
+    queryTab(selector = '.tabs-container'){
+      return new Promise((resolve) => {
+        wx.createSelectorQuery()
+          .select(selector)
+          .boundingClientRect()
+          .exec(resolve);
+      });
+    },
 
-    // 工具函数：查询 Canvas 节点
-  queryCanvas(selector = '#pixiCanvas') {
-    return new Promise((resolve) => {
-      wx.createSelectorQuery()
-        .select(selector)
-        .node()
-        .exec(resolve);
-    });
-  },
-  queryTab(selector = '.tabs-container'){
-    return new Promise((resolve) => {
-      wx.createSelectorQuery()
-        .select(selector)
-        .boundingClientRect()
-        .exec(resolve);
-    });
-  },
+    // 获取canvas舞台高度和宽度
+    calculateStageSize(){
+      const info = wx.getSystemInfoSync();
+      const logicalWidth = info.screenWidth / info.pixelRatio;
+      const logicalHeight = info.screenHeight / info.pixelRatio;
+      // 设定设计稿基准宽度（如 750rpx）
+      const designWidth = 750;
+      // 计算画布高度（保留小数）
+      const canvasHeight = Math.round(designWidth * logicalHeight / logicalWidth);
+      // 最终画布尺寸
+      const stageWidth = designWidth;
+      const stageHeight = canvasHeight;
+      return {stageWidth,stageHeight}
+    },
+    // 处理小程序触摸事件 
+    handleTouch(e) {
+      // 将e事件（touchstart/touchmove）等加入到emit的事件系统中，这样绑定touchstart事件的sprite就可以监听
+      // 转发事件到 Pixi 
 
-  // 获取canvas舞台高度和宽度
-  calculateStageSize(){
-    const info = wx.getSystemInfoSync();
-    const logicalWidth = info.screenWidth / info.pixelRatio;
-    const logicalHeight = info.screenHeight / info.pixelRatio;
-    // 设定设计稿基准宽度（如 750rpx）
-    const designWidth = 750;
-    // 计算画布高度（保留小数）
-    const canvasHeight = Math.round(designWidth * logicalHeight / logicalWidth);
-    // 最终画布尺寸
-    const stageWidth = designWidth;
-    const stageHeight = canvasHeight;
-    return {stageWidth,stageHeight}
-  },
-  // 处理小程序触摸事件 
-  handleTouch(e) {
-    // 将e事件（touchstart/touchmove）等加入到emit的事件系统中，这样绑定touchstart事件的sprite就可以监听
-    // 转发事件到 Pixi 
-
-    this.miniPIXI.dispatchEvent(e);
-  },
-    // pixi 事件处理
-    baseMapPIXIEvent(stage) {
-    stage.on("touchstart", function (e) {
-          const global = e.data.global;
-          console.log("touchstart-开始移动", global);
-    });
-    stage.on("touchmove", function (e) {
-          const global = e.data.global;
-          console.log("touchstart-移动中", global);
-    });
-    stage.on("pointerup", function (e) {
-          const global = e.data.global;
-          console.log("touchstart-移动结束", global);
-    });
-    stage.on("pointertap", function (e) {
-          const global = e.data.global;
-          console.log("touchstart-点击", global);
-    });
-  },
+      this.miniPIXI.dispatchEvent(e);
+    },
     
 
 
-  // 生成miniPIXI对象,并为其添加诸多功能
-  generateMiniPIXI(canvasNode,stageWidth){
-     //加载pixi
-     const PIXI = createPIXI(canvasNode,stageWidth);//传入canvas，传入canvas宽度，用于计算触摸坐标比例适配触摸位置
-     this.miniPIXI=PIXI
-     unsafeEval(PIXI);//适配PIXI里面使用的eval函数
-     installSpine(PIXI);//注入Spine库
-     installAnimate(PIXI);//注入Animate库
-     installCubism4(PIXI,Live2DCubismCore);
-     installPixiLive2d(PIXI,live2d,Live2DCubismCore);
-     TextureResourceLoader.initialize(this.miniPIXI)
-     return PIXI
-  },
-  createContainers(app,PIXI) {
 
-    // stage--->EditableObjecct(parentContainer)---> childContainer(人物) -----> sprite
-    // 根容器设置
-    app.stage.interactive = true;
-    app.stage.interactiveChildren = true;
 
-    // 父容器
-    const parentContainer = new PIXI.Container();
-    parentContainer.interactive = true;
-    parentContainer.interactiveChildren = true;
-    app.stage.addChild(parentContainer);
-
-    // 子容器
-    // const childContainer = new PIXI.Container();
-    // childContainer.interactive = true;
-    // parentContainer.addChild(childContainer);
-
-    // 内部精灵
-    const sprite = PIXI.Sprite.from('https://6c6f-lovers-2ghufp1ec04bc518-1344238052.tcb.qcloud.la/texture/accessories/%E5%9C%86%E7%9C%BC%E9%95%9C.png?sign=89bdb3cc83ee694e922323e6299a5949&t=1740656690');
-    sprite.interactive = true;
-    sprite.on('touchstart', (e) => {
-      console.log('Sprite 被点击', e.data.global);
-    });
-    sprite.on('touchmove', (e) => {
-      console.log('Sprite 被移动', e.data.global);
-    });
-    sprite.on('touchend', (e) => {
-      console.log('Sprite 被停止', e.data.global);
-    });
-    parentContainer.addChild(sprite);
-  },
   /**
    * 生命周期函数--监听页面加载
    */
@@ -256,15 +182,17 @@ Page({
     });
     this.pixiApp.stage.interactive = true;
     this.pixiApp.stage.interactiveChildren = true;
-    this.dressEntrance= new DressEntrance(this.miniPIXI,stageWidth,stageHeight,this.pixiApp)
-    console.log(Object.entries(Datatype))
-   // 将所有的图片资源加载到PIXI中成为纹理对象
-    TextureResourceLoader.priorityLoadByDataType(this.materialsList,priorityTypes,
+    await TextureResourceLoader.priorityLoadByDataType(this.materialsList,priorityTypes,
       (progress) => {
         console.log(`Loading progress: ${progress}%`);
       }).then(() => {
         console.log("All resources loaded!");
         })
+
+    const sceneInfo={name:'网吧'}
+    this.dressEntrance= new DressEntrance(this.miniPIXI,stageWidth,stageHeight,this.pixiApp,sceneInfo)
+    console.log(Object.entries(Datatype))
+   // 将所有的图片资源加载到PIXI中成为纹理对象
 
 
 

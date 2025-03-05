@@ -3,10 +3,9 @@
 <view class='container'>
   <image src="./img/bg.jpg" mode="aspectFill" class="bg"></image>
   <!-- <canvas type="webgl" id="myCanvas" bindtouchstart="touchEvent" bindtouchmove="touchEvent" bindtouchend="touchEvent" bindtouchcancel="touchEvent"></canvas> -->
-  <canvas id="pixiCanvas" type="webgl" style="width: 100%;height: 70%;"     bindtouchstart="handleTouch" 
+  <canvas id="pixiCanvas" version="2" type="webgl" style="width: 100%;height: 70.5%; position: relative;z-index: 0!important;"     bindtouchstart="handleTouch" 
     bindtouchmove="handleTouch" 
     bindtouchend="handleTouch">
-
   </canvas>
 
 

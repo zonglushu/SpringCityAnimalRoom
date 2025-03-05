@@ -51,23 +51,15 @@ export class EditableObject extends EventEmitter{
     const { delBtn, ctrlBtn, dashline } = this.getAllControlSprite();
     delBtn.visible = true;
     ctrlBtn.visible = true;
-    // dashline.visible = true;
+    dashline.visible = true;
   }  
 
   // 在这里会创建三个编辑对象，然后将人物PIXI容器和这三个编辑对象再放到一起，
   // 也就是一个操作容器（三个编辑对象、人物对象）
   async makeSpriteEditable(){
     // // 触发被选择事件，将该editableObject传给监听者(persn/prop),然后将廷泽
-    // setTimeout(() => {
-    //   this.emit("Selected", this);
-    // }, 100);
     // 如果这个对象已经造出来了，那就重新不会再创建一遍，之间给他恢复编辑状态
-    // 获取人物/道具所处的位置,XY是坐标，PX、PY是旋转中心点坐标
     const obj = this.editableTarget;
-    // const originX = obj.x;
-    // const originY = obj.y;
-    const originPX = obj.pivot.x;
-    const originPY = obj.pivot.y;
     // 建立contanier
     this.editorContainer = new this.PIXI.Container();
     this.editorContainer.interactive = true;
@@ -123,7 +115,7 @@ export class EditableObject extends EventEmitter{
     // 从缓存中异常加载纹理，所以要等，不能异步
     this.delBtn = await new DeleteBtn(this.PIXI, this.editableTarget,this.app).create();
     this.controlBtn = await new ControlBtn(this.PIXI, this.editableTarget).create();
-    this.editorContainer.addChild(this.controlBtn,this.delBtn)
+    this.editorContainer.addChild(this.controlBtn,this.delBtn,this.dashLine)
     this.delBtn.x=-this.editableTarget.width/2
     this.delBtn.y=-this.editableTarget.height/2
     this.controlBtn.x=this.editableTarget.width/2
@@ -178,7 +170,7 @@ export class EditableObject extends EventEmitter{
 
     delBtn.visible = false;
     ctrlBtn.visible = false;
-    // dashline.visible = false;
+    dashline.visible = false;
   }
 
 

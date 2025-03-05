@@ -15,8 +15,8 @@ export class DashedRectangle {
     console.log("是中心还是什么",x,y)
 
     // 计算左上角的坐标
-     x = x - width / 2;
-     y = y - height / 2;
+     x = -this.editableTarget.width / 2;
+     y = -this.editableTarget.height / 2;
 
     // const { x, y, width, height } = rect;
     const line = new this.PIXI.Graphics();
