@@ -3,27 +3,33 @@
 <view class='container'>
   <image src="./img/bg.jpg" mode="aspectFill" class="bg"></image>
   <!-- <canvas type="webgl" id="myCanvas" bindtouchstart="touchEvent" bindtouchmove="touchEvent" bindtouchend="touchEvent" bindtouchcancel="touchEvent"></canvas> -->
-  <canvas id="pixiCanvas" version="2" type="webgl" style="width: 100%;height: 70.5%; position: relative;z-index: 0!important;"     bindtouchstart="handleTouch" 
+  <canvas id="pixiCanvas" type="webgl" style="width: 100%;height: 69.5%; position: relative;z-index: 0!important;"     bindtouchstart="handleTouch" 
     bindtouchmove="handleTouch" 
     bindtouchend="handleTouch">
   </canvas>
-
+  <canvas id="savImg" type="2d" style="width: 0; height: 0; position: absolute; left: -1000px"  ></canvas>
+ 
 
   <view class="tabs-container">
     <van-tabs active="{{activeTab}}" sticky color="white" title-active-color="blue" custom-class="custom-tabs" bind:change='onTabChange'>
       <van-tab wx:for="{{ tabs }}" wx:key="id" title="{{ item.title }}" name="{{ item.id }}">
-        <van-grid column-num="4" border="{{ false }}" gutter="10">
+        <scroll-view scroll-y style="height: 300rpx;">
+        <van-grid column-num="3" border="{{ false }}" gutter="10">
           <van-grid-item wx:for="{{currentMaterialsList}}" wx:key="id" data-item="{{ item }}" bind:tap="onImageTap" use-slot bindtap="onImageTap">
-            <image src="{{ item.thumbnail }}" mode="aspectFit" style="width: 100%; height: 200rpx;"  />
+            
+              <image src="{{ item.thumbnail }}" mode="aspectFit" style="width: 100%; height: 200rpx;"  />
             <view style="text-align: center; font-size: 24rpx; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
               {{ item.name }}
             </view>
+           
+
           </van-grid-item>
         </van-grid>
+      </scroll-view>
       </van-tab>
     </van-tabs>
     <view class="button-container">
-      <van-button type="info" round='{{true}}'>保存到本地</van-button>
+      <van-button type="info" round='{{true}}' bind:click='onSaveImageButton'>保存到本地</van-button>
     </view>
   </view>
 

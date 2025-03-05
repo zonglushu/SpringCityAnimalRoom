@@ -2,6 +2,7 @@ import EventEmitter from "./eventemitter3";
 import { Person } from "./person";
 import { Prop } from "./prop";
 import { TextureResourceLoader } from "./textureResourceLoader";
+import { Datatype } from "./types";
 export  class DressEntrance extends EventEmitter {
   constructor(PIXI,stageWidth,stageHeight,app,sceneInfo) {
     super()
@@ -41,14 +42,32 @@ export  class DressEntrance extends EventEmitter {
       const currentEditableRole=this.MaterialPool[this.currentRole]
       currentEditableRole.changeDress(dressInfo)
     }
+
+    changeScene(sceneInfo){
+      const {name}=sceneInfo
+      const changedDress= this.app.stage.getChildByName(Datatype.SCENE.name)
+      const y=changedDress.y
+      const texure= TextureResourceLoader.getTextureFromCache(name)
+      const index = this.app.stage.getChildIndex(changedDress); // 获取旧精灵的层级位置
+      this.app.stage.removeChild(changedDress); // 从容器移除旧精灵
+      const background = new this.PIXI.Sprite(texure);
+      background.name='SCENE'
+      background.width = this.app.screen.width; // 拉伸宽度
+      background.height = this.app.screen.height; // 拉伸高度
+      background.zIndex=-1
+      this.app.stage.addChildAt(background,index); // 将背景添加到舞台
+
+
+    }
     addScene(sceneInfo){
       const {name}=sceneInfo
       const sceneTexture=TextureResourceLoader.getTextureFromCache(name)
       // 加载背景图片
       const background = new this.PIXI.Sprite(sceneTexture);
-      background.name='background'
+      background.name='SCENE'
       background.width = this.app.screen.width; // 拉伸宽度
       background.height = this.app.screen.height; // 拉伸高度
+      background.zIndex=-1
       this.app.stage.addChild(background); // 将背景添加到舞台
     }
     onSelect = (selectItem) => {

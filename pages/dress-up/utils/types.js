@@ -80,7 +80,7 @@ const addDress=({item,dressEntrance})=>{
 const addScene=({item,dressEntrance})=>{
   const {name}=item
   const sceneInfo={name}
-  dressEntrance.addScene(sceneInfo)
+  dressEntrance.changeScene(sceneInfo)
   console.log("背景信息",item)}
 export const addMaterial=new Proxy(
   {

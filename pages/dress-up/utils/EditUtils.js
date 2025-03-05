@@ -198,3 +198,116 @@ export function getRandomId() {
   return UUID.generate()
 }
 
+// Canvas 转临时文件（Promise 封装）
+const canvasToTempFile=(canvasNode)=> {
+  console.log("要转换为图片的canvas节点信息",canvasNode)
+  return new Promise((resolve, reject) => {
+    wx.canvasToTempFilePath({
+      canvasId: canvasNode,
+      fileType: 'png',
+      quality: 1, // 质量 0-1
+      success: (res) => resolve(res.tempFilePath),
+      fail: reject,
+    });
+  });
+};
+
+  // 核心：提取 WebGL 像素数据生成图片
+const captureWebGLToTempFile = (canvasNode, gl) => {
+    return new Promise((resolve, reject) => {
+      const canvas = canvasNode;
+  
+      // 1. 读取 WebGL 像素数据
+      const pixels = new Uint8Array(canvas.width * canvas.height * 4);
+      gl.readPixels(
+        0, 0,
+        canvas.width, canvas.height,
+        gl.RGBA,
+        gl.UNSIGNED_BYTE,
+        pixels
+      );
+  
+      // 2. 垂直翻转像素数据
+      const flippedPixels = new Uint8Array(pixels.length);
+      const rowBytes = canvas.width * 4;
+      for (let y = 0; y < canvas.height; y++) {
+        const srcRow = pixels.subarray(y * rowBytes, (y + 1) * rowBytes);
+        const dstRow = flippedPixels.subarray((canvas.height - y - 1) * rowBytes);
+        dstRow.set(srcRow);
+      }
+  
+      // 3. 获取 WXML 中的 2D Canvas
+      const query = wx.createSelectorQuery();
+      query.select('#savImg')
+        .fields({ node: true, size: true })
+        .exec((res) => {
+          const tempCanvas = res[0].node; // 获取 Canvas 节点
+          console.log("临时的canvas",tempCanvas)
+          const tempCtx = tempCanvas.getContext('2d'); // 获取 2D 上下文
+  
+          // 设置 Canvas 尺寸
+          tempCanvas.width = canvas.width;
+          tempCanvas.height = canvas.height;
+  
+          // 4. 将像素数据绘制到 2D Canvas
+          const imageData = tempCtx.createImageData(canvas.width, canvas.height);
+          imageData.data.set(flippedPixels);
+          tempCtx.putImageData(imageData, 0, 0);
+  
+          // 5. 保存为图片
+          wx.canvasToTempFilePath({
+            canvas: tempCanvas,
+            fileType: 'png',
+            success: (res) => resolve(res.tempFilePath),
+            fail: (err) => {
+              console.error('图片保存失败:', err);
+              reject(new Error('生成图片失败'));
+            }
+          });
+        });
+    });
+  };
+  
+  
+  
+  
+  
+
+
+
+// 错误处理
+const handleImgError=(error)=> {
+  console.error('保存失败:', error);
+  if (error.errMsg.includes('auth deny')) {
+    wx.showModal({
+      title: '权限不足',
+      content: '请到设置中允许访问相册',
+      success: (res) => {
+        if (res.confirm) wx.openSetting();
+      }
+    });
+  } else {
+    wx.showToast({ title: '生成图片失败', icon: 'none' });
+  }
+}
+
+
+export async function saveImg(canvasNode,gl){
+  try {
+    // 生成临时图片路径
+    const tempFilePath = await captureWebGLToTempFile(canvasNode,gl);
+
+    // 检查相册权限
+    const { authSetting } = await wx.getSetting({});
+    if (!authSetting['scope.writePhotosAlbum']) {
+      await wx.authorize({ scope: 'scope.writePhotosAlbum' });
+    }
+
+    // 保存到相册
+    await wx.saveImageToPhotosAlbum({ filePath: tempFilePath });
+    wx.showToast({ title: '保存成功', icon: 'success' });
+  } catch (error) {
+    handleImgError(error);
+  }
+}
+

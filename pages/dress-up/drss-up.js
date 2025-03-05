@@ -8,7 +8,7 @@ import {createPIXI} from "../../libs/pixi.miniprogram"
 import  {Datatype,addMaterial} from "./utils/types"
 import {DressEntrance} from "./utils/dressEntrence"
 import {TextureResourceLoader} from './utils/textureResourceLoader'
-
+import { saveImg } from "./utils/EditUtils";
 
 
 
@@ -39,6 +39,10 @@ Page({
   miniPIXI:null,
 
   pixiApp:null,
+  // canvas节点信息
+  canvasNode:null,
+  // canvas上下午信息
+  gl:null,
   /**
    * 页面的初始数据
    */
@@ -49,15 +53,17 @@ Page({
     currentMaterialsList:[],
     // tab栏分类
     tabs:[],
+
+    
     show: false,
   },
-  showPopup() {
-    this.setData({ show: true });
-  },
+    showPopup() {
+      this.setData({ show: true });
+    },
 
-  onClose() {
-    this.setData({ show: false });
-  },
+    onClose() {
+      this.setData({ show: false });
+    },
   // 处理素材列表的逻辑
     loadGridData(type){
       
@@ -68,6 +74,7 @@ Page({
         currentMaterialsList:items
       })
     },
+    // 获取数据库素材信息
     async fetchAndStoreMaterials(){
       try {
         const res = await wx.cloud.callFunction({
@@ -98,6 +105,10 @@ Page({
 
       // 在这里处理 item 的逻辑
       // 例如：跳转到详情页、显示弹窗等
+    },
+
+    onSaveImageButton(){
+      saveImg(this.canvasNode,this.gl)
     },
       // 工具函数：查询 Canvas 节点
     queryCanvas(selector = '#pixiCanvas') {
@@ -160,6 +171,11 @@ Page({
     // 获取屏幕的canvas节点
     const [canvasInfo]= await this.queryCanvas()
     const canvasNode=canvasInfo.node;
+    this.canvasNode=canvasNode
+    this.gl = canvasNode.getContext('webgl', {
+      preserveDrawingBuffer: true  // 关键参数！
+    });
+    console.log("canvas上下文信息",this.gl)
     this.miniPIXI= createPIXI(canvasNode,stageWidth);//传入canvas，传入canvas宽度，用于计算触摸坐标比例适配触摸位置
     
     unsafeEval(this.miniPIXI);//适配PIXI里面使用的eval函数
